@@ -58,6 +58,14 @@ ln -s ../../livery      _checkouts/livery
 rebar3 ct
 ```
 
+## Known gap
+
+Server reflection cannot serve this binding's message schemas. `a2a.proto`
+uses `map<>` fields, and gpb's descriptor output omits the synthetic map
+entry types they need (`google.protobuf.Struct.FieldsEntry` and friends),
+which protoreflect rejects. The fix belongs in `livery_grpc_reflection`,
+which is where the `FileDescriptorSet` is split.
+
 ## Tests
 
 ```sh
