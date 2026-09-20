@@ -78,9 +78,6 @@ SDK over its gRPC transport, so the wire is read by an implementation
 that shares no code with this one. That group skips when the venv is
 absent, so `rebar3 ct` never needs Python.
 
-`livery_grpc` is pinned by tag until 0.2.0 reaches hex; switch it to
-`{livery_grpc, "~> 0.2.0"}` and drop the explicit `livery` entry then.
-
 ## License
 
 Apache 2.0.
