@@ -1,0 +1,8 @@
+{
+  "statusUpdate": {
+    "taskId": "task-uuid",
+    "status": {
+      "state": "TASK_STATE_COMPLETED"
+    }
+  }
+}

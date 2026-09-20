@@ -1,0 +1,19 @@
+{
+  "id": "academic-research",
+  "name": "Academic Research Assistant",
+  "description": "Provides research assistance with citations and source verification",
+  "tags": [
+    "research",
+    "citations",
+    "academic"
+  ],
+  "examples": [
+    "Find peer-reviewed articles on climate change"
+  ],
+  "inputModes": [
+    "text/plain"
+  ],
+  "outputModes": [
+    "text/plain"
+  ]
+}

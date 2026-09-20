@@ -1,0 +1,7 @@
+{
+  "httpAuthSecurityScheme": {
+    "description": "Bearer",
+    "scheme": "bearer",
+    "bearerFormat": "JWT"
+  }
+}

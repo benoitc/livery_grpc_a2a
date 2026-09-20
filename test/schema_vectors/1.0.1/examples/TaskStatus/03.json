@@ -1,0 +1,13 @@
+{
+  "state": "TASK_STATE_WORKING",
+  "message": {
+    "role": "ROLE_AGENT",
+    "parts": [
+      {
+        "text": "Processing your document analysis..."
+      }
+    ],
+    "messageId": "msg-status-update"
+  },
+  "timestamp": "2024-03-15T10:20:00Z"
+}

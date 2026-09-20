@@ -1,0 +1,24 @@
+{
+  "id": "custom-map-generator",
+  "name": "Personalized Map Generator",
+  "description": "Creates custom map images or interactive map views based on user-defined points of interest, routes, and style preferences. Can overlay data layers.",
+  "tags": [
+    "maps",
+    "customization",
+    "visualization",
+    "cartography"
+  ],
+  "examples": [
+    "Generate a map of my upcoming road trip with all planned stops highlighted.",
+    "Show me a map visualizing all coffee shops within a 1-mile radius of my current location."
+  ],
+  "inputModes": [
+    "application/json"
+  ],
+  "outputModes": [
+    "image/png",
+    "image/jpeg",
+    "application/json",
+    "text/html"
+  ]
+}

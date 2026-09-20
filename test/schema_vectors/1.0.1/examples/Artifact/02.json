@@ -1,0 +1,11 @@
+{
+  "artifactId": "9b6934dd-37e3-4eb1-8766-962efaab63a1",
+  "name": "processed_image_with_faces.png",
+  "parts": [
+    {
+      "url": "https://storage.example.com/processed/task-bbb/output.png?token=xyz",
+      "filename": "output.png",
+      "mediaType": "image/png"
+    }
+  ]
+}

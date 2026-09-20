@@ -1,0 +1,9 @@
+{
+  "taskPushNotificationConfig": {
+    "url": "https://client.example.com/webhook/a2a-notifications",
+    "authentication": {
+      "scheme": "Bearer",
+      "credentials": "secure-client-token-for-task-aaa"
+    }
+  }
+}

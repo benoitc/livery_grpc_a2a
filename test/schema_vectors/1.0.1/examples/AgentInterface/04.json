@@ -1,0 +1,5 @@
+{
+  "url": "https://research-agent.example.com/a2a/v1",
+  "protocolBinding": "HTTP+JSON",
+  "protocolVersion": "0.3"
+}

@@ -1,0 +1,5 @@
+{
+  "uri": "https://example.com/extensions/geolocation/v1",
+  "description": "Location-based search capabilities",
+  "required": false
+}

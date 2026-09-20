@@ -1,0 +1,5 @@
+{
+  "url": "https://georoute-agent.example.com/a2a/json",
+  "protocolBinding": "HTTP+JSON",
+  "protocolVersion": "1.0"
+}

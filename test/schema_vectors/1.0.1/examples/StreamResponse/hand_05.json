@@ -1,0 +1,22 @@
+{
+  "message": {
+    "messageId": "msg-3",
+    "contextId": "ctx-1",
+    "taskId": "task-1",
+    "role": "ROLE_AGENT",
+    "parts": [
+      {
+        "text": "done"
+      }
+    ],
+    "metadata": {
+      "k": "v"
+    },
+    "extensions": [
+      "https://example.com/ext/v1"
+    ],
+    "referenceTaskIds": [
+      "task-0"
+    ]
+  }
+}

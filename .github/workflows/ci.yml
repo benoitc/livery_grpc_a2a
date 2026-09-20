@@ -1,0 +1,149 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  OTP: '28'
+  REBAR3: '3.25.0'
+
+jobs:
+  format:
+    name: erlfmt
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+      - uses: erlef/setup-beam@v1
+        with:
+          otp-version: ${{ env.OTP }}
+          rebar3-version: ${{ env.REBAR3 }}
+      - run: rebar3 fmt --check
+
+  lint:
+    name: Elvis lint
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+      - uses: erlef/setup-beam@v1
+        with:
+          otp-version: ${{ env.OTP }}
+          rebar3-version: ${{ env.REBAR3 }}
+      # The instrument NIF, reached through livery, builds with cmake.
+      - name: System deps
+        run: sudo apt-get update && sudo apt-get install -y cmake build-essential
+      - uses: actions/cache@v5
+        with:
+          path: |
+            _build
+            ~/.cache/rebar3
+          key: build-otp-${{ env.OTP }}-${{ hashFiles('rebar.config') }}
+      - run: rebar3 lint
+
+  xref:
+    name: XRef
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+      - uses: erlef/setup-beam@v1
+        with:
+          otp-version: ${{ env.OTP }}
+          rebar3-version: ${{ env.REBAR3 }}
+      - name: System deps
+        run: sudo apt-get update && sudo apt-get install -y cmake build-essential
+      - uses: actions/cache@v5
+        with:
+          path: |
+            _build
+            ~/.cache/rebar3
+          key: build-otp-${{ env.OTP }}-${{ hashFiles('rebar.config') }}
+      - run: rebar3 xref
+
+  dialyzer:
+    name: Dialyzer
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+      - uses: erlef/setup-beam@v1
+        with:
+          otp-version: ${{ env.OTP }}
+          rebar3-version: ${{ env.REBAR3 }}
+      - name: System deps
+        run: sudo apt-get update && sudo apt-get install -y cmake build-essential
+      - uses: actions/cache@v5
+        with:
+          path: |
+            _build
+            ~/.cache/rebar3
+            ~/.cache/rebar3/rebar3_*_plt
+          key: dialyzer-otp-${{ env.OTP }}-${{ hashFiles('rebar.config') }}
+      - run: rebar3 dialyzer
+
+  # ---- Tests -------------------------------------------------------------
+  # eunit covers the codec, including the 120 vendored schema vectors:
+  # each one round trips through the wire and is validated against the
+  # official A2A JSON Schema that barrel_a2a ships.
+  eunit:
+    name: EUnit
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+      - uses: erlef/setup-beam@v1
+        with:
+          otp-version: ${{ env.OTP }}
+          rebar3-version: ${{ env.REBAR3 }}
+      - name: System deps
+        run: sudo apt-get update && sudo apt-get install -y cmake build-essential
+      - uses: actions/cache@v5
+        with:
+          path: |
+            _build
+            ~/.cache/rebar3
+          key: build-otp-${{ env.OTP }}-${{ hashFiles('rebar.config') }}
+      - run: rebar3 eunit
+
+  # End to end: a real agent served over gRPC, driven by barrel_a2a's
+  # client, a raw livery_grpc_client and grpcurl.
+  ct:
+    name: Common Test
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+      - uses: erlef/setup-beam@v1
+        with:
+          otp-version: ${{ env.OTP }}
+          rebar3-version: ${{ env.REBAR3 }}
+      - name: System deps
+        run: sudo apt-get update && sudo apt-get install -y cmake build-essential
+      - name: Install grpcurl
+        run: |
+          curl -sSfL https://github.com/fullstorydev/grpcurl/releases/download/v1.9.3/grpcurl_1.9.3_linux_x86_64.tar.gz \
+            | sudo tar -xz -C /usr/local/bin grpcurl
+          grpcurl --version
+      - uses: actions/cache@v5
+        with:
+          path: |
+            _build
+            ~/.cache/rebar3
+          key: build-otp-${{ env.OTP }}-${{ hashFiles('rebar.config') }}
+      - run: rebar3 ct
+
+  # The same agent driven by the official A2A Python SDK over its gRPC
+  # transport, so the wire is checked against an independent reader.
+  interop:
+    name: Python interop
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+      - uses: erlef/setup-beam@v1
+        with:
+          otp-version: ${{ env.OTP }}
+          rebar3-version: ${{ env.REBAR3 }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: System deps
+        run: sudo apt-get update && sudo apt-get install -y cmake build-essential
+      - run: make interop-a2a

@@ -1,0 +1,86 @@
+{
+  "id": "task-1",
+  "contextId": "ctx-1",
+  "status": {
+    "state": "TASK_STATE_COMPLETED",
+    "message": {
+      "messageId": "msg-3",
+      "contextId": "ctx-1",
+      "taskId": "task-1",
+      "role": "ROLE_AGENT",
+      "parts": [
+        {
+          "text": "done"
+        }
+      ],
+      "metadata": {
+        "k": "v"
+      },
+      "extensions": [
+        "https://example.com/ext/v1"
+      ],
+      "referenceTaskIds": [
+        "task-0"
+      ]
+    },
+    "timestamp": "2025-10-28T10:30:00.000Z"
+  },
+  "artifacts": [
+    {
+      "artifactId": "art-1",
+      "name": "Result",
+      "description": "The result",
+      "parts": [
+        {
+          "text": "hello"
+        },
+        {
+          "data": {
+            "a": 1,
+            "b": [
+              true,
+              null
+            ]
+          },
+          "mediaType": "application/json"
+        }
+      ],
+      "metadata": {},
+      "extensions": []
+    }
+  ],
+  "history": [
+    {
+      "role": "ROLE_USER",
+      "parts": [
+        {
+          "text": "What is the weather today?"
+        }
+      ],
+      "messageId": "msg-uuid"
+    },
+    {
+      "messageId": "msg-3",
+      "contextId": "ctx-1",
+      "taskId": "task-1",
+      "role": "ROLE_AGENT",
+      "parts": [
+        {
+          "text": "done"
+        }
+      ],
+      "metadata": {
+        "k": "v"
+      },
+      "extensions": [
+        "https://example.com/ext/v1"
+      ],
+      "referenceTaskIds": [
+        "task-0"
+      ]
+    }
+  ],
+  "metadata": {
+    "trace": "abc"
+  }
+}

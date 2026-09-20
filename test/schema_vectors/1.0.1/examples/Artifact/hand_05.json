@@ -1,0 +1,14 @@
+{
+  "artifactId": "art-2",
+  "name": "Report",
+  "description": "A report",
+  "parts": [
+    {
+      "text": "body"
+    }
+  ],
+  "metadata": {
+    "pages": 3
+  },
+  "extensions": []
+}

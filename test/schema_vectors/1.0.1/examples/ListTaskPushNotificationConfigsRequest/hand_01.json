@@ -1,0 +1,6 @@
+{
+  "tenant": "acme",
+  "taskId": "task-1",
+  "pageSize": 10,
+  "pageToken": ""
+}

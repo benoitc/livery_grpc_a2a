@@ -45,19 +45,6 @@ binding-neutral `barrel_a2a_server_core:call/4`, and the
 
 See `docs/guides/a2a.md`.
 
-## Status
-
-Requires an unreleased `livery_grpc`: the binding needs the `config`
-field of `livery_grpc:service_spec()`, which is not in 0.1.2. Until
-that ships, build against a local checkout:
-
-```sh
-mkdir -p _checkouts
-ln -s ../../livery_grpc _checkouts/livery_grpc
-ln -s ../../livery      _checkouts/livery
-rebar3 ct
-```
-
 ## Known gap
 
 Server reflection cannot serve this binding's message schemas. `a2a.proto`
@@ -69,12 +56,30 @@ which is where the `FileDescriptorSet` is split.
 ## Tests
 
 ```sh
-rebar3 eunit    # codec round trips
-rebar3 ct       # a served agent, driven over gRPC in both directions
+rebar3 eunit        # codec, including the schema vectors
+rebar3 ct           # a served agent, driven over gRPC in both directions
+make interop-a2a    # the same agent, driven by the official Python SDK
+make check          # the lot, plus dialyzer, xref, elvis and erlfmt
 ```
 
-The CT suite also has a Python group that drives the server with the
-official A2A gRPC client; it skips unless that environment is set up.
+**eunit** runs 120 vendored schema vectors, one canonical instance of
+each A2A type, twice over: every vector round trips through `to_pb` and
+back with nothing lost or invented, and the JSON the codec writes is
+validated against the official A2A JSON Schema bundle that `barrel_a2a`
+ships in `priv`. The vectors live in `test/schema_vectors`; see its
+`VENDORED.md` for where they come from and how to update them.
+
+**ct** starts a real agent, serves it over gRPC and drives it three
+ways: through `barrel_a2a_client` over the gRPC transport, through a raw
+`livery_grpc_client`, and through `grpcurl` against server reflection.
+
+**make interop-a2a** drives the same agent with the official A2A Python
+SDK over its gRPC transport, so the wire is read by an implementation
+that shares no code with this one. That group skips when the venv is
+absent, so `rebar3 ct` never needs Python.
+
+`livery_grpc` is pinned by tag until 0.2.0 reaches hex; switch it to
+`{livery_grpc, "~> 0.2.0"}` and drop the explicit `livery` entry then.
 
 ## License
 

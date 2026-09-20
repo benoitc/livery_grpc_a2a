@@ -1,0 +1,52 @@
+{
+  "name": "Minimal",
+  "description": "Minimal card",
+  "version": "1.0.0",
+  "capabilities": {},
+  "supportedInterfaces": [
+    {
+      "url": "https://agent.example.com/a2a",
+      "protocolBinding": "JSONRPC",
+      "protocolVersion": "1.0"
+    }
+  ],
+  "provider": {
+    "organization": "Example",
+    "url": "https://example.com"
+  },
+  "iconUrl": "https://example.com/i.png",
+  "documentationUrl": "https://example.com/docs",
+  "defaultInputModes": [
+    "text/plain"
+  ],
+  "defaultOutputModes": [
+    "text/plain"
+  ],
+  "securitySchemes": {
+    "apiKey": {
+      "apiKeySecurityScheme": {
+        "description": "API key",
+        "location": "header",
+        "name": "X-API-Key"
+      }
+    }
+  },
+  "securityRequirements": [
+    {
+      "schemes": {
+        "apiKey": {
+          "list": []
+        }
+      }
+    }
+  ],
+  "skills": [
+    {
+      "id": "s",
+      "name": "S",
+      "description": "d",
+      "tags": []
+    }
+  ],
+  "signatures": []
+}

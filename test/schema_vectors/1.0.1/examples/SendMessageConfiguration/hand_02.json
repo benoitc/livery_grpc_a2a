@@ -1,0 +1,10 @@
+{
+  "acceptedOutputModes": [
+    "text/plain"
+  ],
+  "historyLength": 10,
+  "returnImmediately": true,
+  "taskPushNotificationConfig": {
+    "url": "https://client.example.com/hook"
+  }
+}

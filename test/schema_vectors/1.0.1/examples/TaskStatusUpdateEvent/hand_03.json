@@ -1,0 +1,9 @@
+{
+  "taskId": "task-1",
+  "contextId": "ctx-1",
+  "status": {
+    "state": "TASK_STATE_FAILED",
+    "timestamp": "2025-10-28T10:30:00.000Z"
+  },
+  "metadata": {}
+}

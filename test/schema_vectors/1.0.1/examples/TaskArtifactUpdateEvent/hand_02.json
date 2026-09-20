@@ -1,0 +1,15 @@
+{
+  "taskId": "task-1",
+  "contextId": "ctx-1",
+  "artifact": {
+    "artifactId": "art-1",
+    "parts": [
+      {
+        "text": "chunk"
+      }
+    ]
+  },
+  "append": true,
+  "lastChunk": false,
+  "metadata": {}
+}

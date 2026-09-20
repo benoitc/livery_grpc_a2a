@@ -1,0 +1,7 @@
+{
+  "apiKeySecurityScheme": {
+    "description": "API key",
+    "location": "header",
+    "name": "X-API-Key"
+  }
+}

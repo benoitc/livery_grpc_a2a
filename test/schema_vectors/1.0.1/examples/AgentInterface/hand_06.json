@@ -1,0 +1,6 @@
+{
+  "url": "https://agent.example.com/a2a",
+  "protocolBinding": "JSONRPC",
+  "protocolVersion": "1.0",
+  "tenant": "acme"
+}

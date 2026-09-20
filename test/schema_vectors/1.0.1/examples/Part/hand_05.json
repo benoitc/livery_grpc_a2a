@@ -1,0 +1,13 @@
+{
+  "data": {
+    "a": 1,
+    "nested": {
+      "b": [
+        1,
+        2,
+        3
+      ]
+    }
+  },
+  "mediaType": "application/json"
+}

@@ -1,0 +1,9 @@
+{
+  "role": "ROLE_AGENT",
+  "parts": [
+    {
+      "text": "Processing your document analysis..."
+    }
+  ],
+  "messageId": "msg-status-update"
+}

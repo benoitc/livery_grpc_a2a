@@ -1,0 +1,4 @@
+{
+  "scheme": "Bearer",
+  "credentials": "secure-client-token-for-task-aaa"
+}

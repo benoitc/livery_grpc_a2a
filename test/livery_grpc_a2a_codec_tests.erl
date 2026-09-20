@@ -6,21 +6,41 @@
 %% Vector corpus
 %%====================================================================
 
-%% Every schema vector barrel_a2a ships must survive
-%% `to_pb` then `to_json`. One vector is skipped, for the reason
-%% barrel_a2a's own vector suite skips it.
+%% Every schema vector must survive `to_pb` then `to_json`. One vector
+%% is skipped, for the reason barrel_a2a's own vector suite skips it.
+%%
+%% The vectors are vendored under test/schema_vectors (see its
+%% VENDORED.md). They used to be read from barrel_a2a's own test
+%% directory, which a hex install does not ship: that worked from a
+%% sibling checkout and silently contributed nothing in CI. A missing
+%% directory is a failure now, not an empty list.
 vectors_test_() ->
-    case vector_dir() of
-        {ok, Dir} ->
-            {inparallel, [vector_case(Type, File) || {Type, File} <- vectors(Dir)]};
-        error ->
-            %% barrel_a2a's vectors live in its test/ directory, which is
-            %% absent from a hex-style install.
-            {"schema vectors unavailable", []}
-    end.
+    {ok, Dir} = vector_dir(),
+    Vectors = vectors(Dir),
+    ?assertNotEqual([], Vectors),
+    {inparallel, [vector_case(Type, File) || {Type, File} <- Vectors]}.
 
 vector_case(Type, File) ->
     {atom_to_list(Type) ++ "/" ++ filename:basename(File), fun() -> round_trip(Type, File) end}.
+
+%% The round trip proves the codec is self-consistent. This proves it is
+%% right: what it writes is checked against the official A2A JSON Schema
+%% bundle, which barrel_a2a ships in `priv' and therefore travels with
+%% the dependency rather than with these vectors.
+vectors_match_the_schema_test_() ->
+    {ok, Dir} = vector_dir(),
+    Types = barrel_a2a_schema:types(),
+    {inparallel, [
+        {atom_to_list(Type) ++ "/" ++ filename:basename(File) ++ " matches the schema", fun() ->
+            schema_check(Type, File)
+        end}
+     || {Type, File} <- vectors(Dir),
+        lists:member(atom_to_binary(Type, utf8), Types)
+    ]}.
+
+schema_check(Type, File) ->
+    Out = livery_grpc_a2a_codec:to_json(Type, livery_grpc_a2a_codec:to_pb(Type, decode_file(File))),
+    ?assertEqual(ok, barrel_a2a_schema:validate(atom_to_binary(Type, utf8), Out)).
 
 round_trip(Type, File) ->
     In = decode_file(File),
@@ -116,40 +136,29 @@ decode_file(File) ->
     {ok, Bin} = file:read_file(File),
     json:decode(Bin).
 
-%% barrel_a2a's vectors sit in its `test` directory. That directory is
-%% present for a git or path dependency; when it is not (or when a
-%% checkout symlinks only `src`), fall back to the source tree the
-%% symlink points at, then to a sibling checkout.
+%% The vendored vectors, overridable for a bisect against another
+%% revision of the specification.
 vector_dir() ->
-    Suffix = filename:join(["test", "schema_vectors", "1.0.1", "examples"]),
     Candidates =
         [os:getenv("A2A_SCHEMA_VECTORS")] ++
             [
-                filename:join(Root, Suffix)
-             || Root <- [lib_dir(), source_root(), "../barrel_a2a", "../../barrel_a2a"],
-                Root =/= false
+                filename:join([Root, "test", "schema_vectors", "1.0.1", "examples"])
+             || Root <- [source_root(), "."], Root =/= false
             ],
     case [D || D <- Candidates, D =/= false, filelib:is_dir(D)] of
         [Dir | _] -> {ok, Dir};
         [] -> error
     end.
 
-lib_dir() ->
-    case code:lib_dir(barrel_a2a) of
-        {error, _} -> false;
-        Dir -> Dir
-    end.
-
-%% A rebar3 checkout links `src` at the real source tree; its parent is
-%% the repository root, which does hold `test`.
+%% This application's own source tree, where the vendored vectors live.
 source_root() ->
-    case lib_dir() of
-        false ->
+    case code:lib_dir(livery_grpc_a2a) of
+        {error, _} ->
             false;
         Dir ->
             case file:read_link_all(filename:join(Dir, "src")) of
                 {ok, Link} -> filename:dirname(filename:absname(Link, Dir));
-                {error, _} -> false
+                {error, _} -> filename:absname(filename:join(Dir, ".."))
             end
     end.
 

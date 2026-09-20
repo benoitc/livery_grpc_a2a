@@ -1,0 +1,5 @@
+{
+  "url": "https://georoute-agent.example.com/a2a/grpc",
+  "protocolBinding": "GRPC",
+  "protocolVersion": "1.0"
+}

@@ -1,0 +1,8 @@
+{
+  "flows": {
+    "clientCredentials": {
+      "tokenUrl": "https://auth.example.com/token",
+      "scopes": {}
+    }
+  }
+}

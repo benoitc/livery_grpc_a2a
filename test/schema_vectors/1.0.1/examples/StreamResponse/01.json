@@ -1,0 +1,8 @@
+{
+  "task": {
+    "id": "task-uuid",
+    "status": {
+      "state": "TASK_STATE_WORKING"
+    }
+  }
+}

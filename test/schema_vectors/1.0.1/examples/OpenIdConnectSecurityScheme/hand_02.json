@@ -1,0 +1,4 @@
+{
+  "description": "OIDC",
+  "openIdConnectUrl": "https://issuer.example.com/.well-known/openid-configuration"
+}

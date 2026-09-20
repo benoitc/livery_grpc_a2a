@@ -1,0 +1,20 @@
+{
+  "text": "Show me a list of my open IT tickets",
+  "metadata": {
+    "mediaType": "application/json",
+    "schema": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "ticketNumber": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

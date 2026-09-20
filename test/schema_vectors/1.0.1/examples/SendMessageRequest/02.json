@@ -1,0 +1,11 @@
+{
+  "message": {
+    "role": "ROLE_USER",
+    "parts": [
+      {
+        "text": "Write a detailed report on climate change"
+      }
+    ],
+    "messageId": "msg-uuid"
+  }
+}

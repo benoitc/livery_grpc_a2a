@@ -1,0 +1,26 @@
+{
+  "id": "s1",
+  "name": "Skill",
+  "description": "A skill",
+  "tags": [
+    "a"
+  ],
+  "examples": [
+    "do it"
+  ],
+  "inputModes": [
+    "text/plain"
+  ],
+  "outputModes": [
+    "text/plain"
+  ],
+  "securityRequirements": [
+    {
+      "schemes": {
+        "apiKey": {
+          "list": []
+        }
+      }
+    }
+  ]
+}

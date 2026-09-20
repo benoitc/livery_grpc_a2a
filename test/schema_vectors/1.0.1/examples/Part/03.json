@@ -1,0 +1,5 @@
+{
+  "url": "https://storage.example.com/processed/task-bbb/output.png?token=xyz",
+  "filename": "output.png",
+  "mediaType": "image/png"
+}

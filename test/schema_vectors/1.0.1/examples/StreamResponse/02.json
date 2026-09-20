@@ -1,0 +1,12 @@
+{
+  "artifactUpdate": {
+    "taskId": "task-uuid",
+    "artifact": {
+      "parts": [
+        {
+          "text": "# Climate Change Report\n\n"
+        }
+      ]
+    }
+  }
+}

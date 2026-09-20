@@ -1,0 +1,7 @@
+{
+  "tenant": "acme",
+  "id": "task-1",
+  "metadata": {
+    "reason": "user"
+  }
+}

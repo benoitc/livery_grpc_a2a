@@ -1,0 +1,15 @@
+{
+  "streaming": true,
+  "pushNotifications": true,
+  "extendedAgentCard": false,
+  "extensions": [
+    {
+      "uri": "https://example.com/ext/v1",
+      "description": "d",
+      "required": true,
+      "params": {
+        "level": 2
+      }
+    }
+  ]
+}

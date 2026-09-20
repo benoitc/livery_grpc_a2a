@@ -1,0 +1,5 @@
+{
+  "uri": "https://standards.org/extensions/citations/v1",
+  "description": "Provides citation formatting and source verification",
+  "required": false
+}

@@ -1,0 +1,7 @@
+{
+  "protected": "eyJhbGciOiJFUzI1NiJ9",
+  "signature": "c2ln",
+  "header": {
+    "kid": "key-1"
+  }
+}

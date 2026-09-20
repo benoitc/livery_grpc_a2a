@@ -1,0 +1,5 @@
+{
+  "tenant": "acme",
+  "id": "task-1",
+  "historyLength": 5
+}
