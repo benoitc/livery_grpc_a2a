@@ -1,0 +1,4 @@
+# The official A2A Python SDK with its gRPC transport, pinned so an
+# interop run is reproducible. Bump on purpose when validating against a
+# newer release.
+a2a-sdk[grpc]==1.1.2

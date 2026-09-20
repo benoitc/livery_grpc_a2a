@@ -1,0 +1,8 @@
+_build/
+_checkouts/
+.rebar3/
+rebar3.crashdump
+erl_crash.dump
+doc/
+src/*_pb.erl
+test/interop/.venv/

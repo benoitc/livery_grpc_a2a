@@ -1,0 +1,10 @@
+// The google.rpc types the A2A gRPC binding puts in the
+// grpc-status-details-bin trailer. gpb inlines imported definitions, so
+// this file exists only to give them a module of their own
+// (a2a_status_pb) instead of pulling them into a2a_pb.
+syntax = "proto3";
+
+package livery.grpc.a2a;
+
+import "google/rpc/error_details.proto";
+import "google/rpc/status.proto";

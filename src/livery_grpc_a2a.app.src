@@ -1,0 +1,11 @@
+{application, livery_grpc_a2a, [
+    {description, "Agent2Agent (A2A) gRPC binding for livery_grpc"},
+    {vsn, "0.1.0"},
+    {registered, []},
+    {applications, [kernel, stdlib, gpb, livery_grpc, barrel_a2a]},
+    {env, []},
+    {modules, []},
+    {licenses, ["Apache-2.0"]},
+    {links, [{"GitHub", "https://github.com/benoitc/livery_grpc_a2a"}]},
+    {files, ["src", "proto", "rebar.config", "README.md", "LICENSE", "docs"]}
+]}.

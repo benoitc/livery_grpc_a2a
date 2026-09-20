@@ -1,0 +1,39 @@
+// Vendored from googleapis/google/rpc/error_details.proto (Apache-2.0),
+// trimmed to the two detail types the A2A binding puts in a
+// google.rpc.Status: ErrorInfo (the A2A error reason and domain) and
+// BadRequest (field violations). Field numbers match upstream, so the
+// wire format is identical.
+syntax = "proto3";
+
+package google.rpc;
+
+option go_package = "google.golang.org/genproto/googleapis/rpc/errdetails;errdetails";
+option java_multiple_files = true;
+option java_outer_classname = "ErrorDetailsProto";
+option java_package = "com.google.rpc";
+
+// Describes the cause of the error with structured details.
+message ErrorInfo {
+  // The reason of the error, an UPPER_SNAKE_CASE string.
+  string reason = 1;
+  // The logical grouping to which the "reason" belongs.
+  string domain = 2;
+  // Additional structured details about this error.
+  map<string, string> metadata = 3;
+}
+
+// Describes violations in a client request.
+message BadRequest {
+  // A message type used to describe a single bad request field.
+  message FieldViolation {
+    // A path leading to a field in the request body.
+    string field = 1;
+    // A description of why the request element is bad.
+    string description = 2;
+    // The reason of the field-level error.
+    string reason = 3;
+  }
+
+  // Describes all violations in a client request.
+  repeated FieldViolation field_violations = 1;
+}
