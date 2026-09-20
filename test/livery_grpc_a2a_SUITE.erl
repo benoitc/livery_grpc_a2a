@@ -615,8 +615,10 @@ proto_args() ->
 
 %% `src` in the built app is a symlink to the source tree, whose parent
 %% is the repository root.
+%% This application's own source tree: `proto/a2a.proto' ships here,
+%% not in livery_grpc.
 source_root() ->
-    Lib = code:lib_dir(livery_grpc),
+    Lib = code:lib_dir(livery_grpc_a2a),
     case file:read_link_all(filename:join(Lib, "src")) of
         {ok, Link} -> filename:dirname(filename:absname(Link, Lib));
         {error, _} -> filename:absname(filename:join(Lib, ".."))
