@@ -218,5 +218,6 @@ which protoreflect rejects. Pass `-proto` until that is fixed.
   no way yet for a handler to add response metadata.
 - `test/livery_grpc_a2a_SUITE` drives all of this three ways: through
   `barrel_a2a_client`, through a raw `livery_grpc_client` that pins the
-  wire shape, and through grpcurl. `make interop-a2a` adds a fourth, the
-  official A2A Python SDK over its own gRPC transport.
+  wire shape, and through grpcurl. `make interop` adds the `a2a-python`,
+  `a2a-go` and `@a2a-js/sdk` reference SDKs, each over its own gRPC
+  transport. See [Spec coverage](../compliance.md) for the full map.

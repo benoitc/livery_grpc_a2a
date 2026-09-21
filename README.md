@@ -20,6 +20,19 @@ sets out the split and the two contracts it rests on: the
 binding-neutral `barrel_a2a_server_core:call/4`, and the
 `barrel_a2a_client_transport` behaviour for the client side.
 
+## Install
+
+Add the package to your `rebar.config`:
+
+```erlang
+{deps, [
+    {livery_grpc_a2a, "~> 0.1.0"}
+]}.
+```
+
+It brings `livery_grpc`, `livery` and `barrel_a2a` with it. The modules
+use `-moduledoc`, so you need OTP 27 or later; CI runs OTP 28.
+
 ## Serve an agent
 
 ```erlang
@@ -43,7 +56,8 @@ binding-neutral `barrel_a2a_server_core:call/4`, and the
 {ok, {task, Task}} = barrel_a2a_client:send(Agent, <<"hello">>).
 ```
 
-See `docs/guides/a2a.md`.
+See the [A2A guide](docs/guides/a2a.md), and the
+[changelog](CHANGELOG.md) for what each release carries.
 
 ## Known gap
 
