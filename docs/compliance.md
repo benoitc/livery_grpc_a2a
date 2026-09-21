@@ -52,15 +52,18 @@ the A2A reason and the `a2a-protocol.org` domain.
 |---|---|
 | The status code matches the A2A error type | `t_wire_error_details`, `t_task_not_found` |
 | The A2A reason travels in `ErrorInfo` | `t_wire_error_details` |
-| A foreign client surfaces it as an error, not a success | `t_ref_error`, for each SDK |
+| A foreign client reads the A2A reason back | `t_ref_error`, for each SDK |
 | An unsupported protocol version is refused | `t_version_error` |
 | The error is legible to a generic gRPC client | `t_grpcurl_error` |
 
-The exact reason is asserted on the wire rather than through an SDK:
-each SDK labels the same condition differently (`a2a-go` reports the A2A
-reason `TASK_NOT_FOUND`, `a2a-python` its exception class), so the
-shared reference-client assertion checks that an error naming the task
-arrived, and `t_wire_error_details` checks the reason itself.
+The reason is asserted twice over, and both are the same string. On the
+wire, `t_wire_error_details` decodes `grpc-status-details-bin` and reads
+`ErrorInfo.reason` directly. Through the SDKs, each reference client
+reports the reason its own library exposes, so `t_ref_error` asserts one
+value for all three: `a2a-go` has `ErrorReason/1`, `a2a-js` carries it on
+`A2AError.reason`, and `a2a-python` maps its exception type back through
+`A2A_ERROR_REASONS`. An SDK that surfaced a bare gRPC status instead of
+the A2A reason would fail that case.
 
 ## Interop
 

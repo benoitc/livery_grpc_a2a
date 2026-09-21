@@ -32,6 +32,7 @@ from a2a.types.a2a_pb2 import (
     TaskState,
 )
 from a2a.utils.constants import TransportProtocol
+from a2a.utils.errors import A2A_ERROR_REASONS
 
 TIMEOUT_SECONDS = 40
 
@@ -210,11 +211,18 @@ async def scenario_direct(client):
 
 
 async def scenario_error(client):
-    """A missing task must arrive as the A2A error type, not a bare status."""
+    """A missing task must arrive as the A2A reason, not a bare status.
+
+    Every language reports the same UPPER_SNAKE reason from
+    ``google.rpc.ErrorInfo`` so the suite can assert one value. The SDK
+    raises a typed exception; ``A2A_ERROR_REASONS`` is its own mapping
+    from that type back to the reason.
+    """
     try:
         await client.get_task(GetTaskRequest(id="no-such-task"))
-    except Exception as exc:  # noqa: BLE001 - the type is what we report
-        emit(step="error", error=type(exc).__name__, text=str(exc))
+    except Exception as exc:  # noqa: BLE001 - the reason is what we report
+        reason = A2A_ERROR_REASONS.get(type(exc), type(exc).__name__)
+        emit(step="error", error=reason, text=str(exc))
         return
     emit(step="error", error="none", text="")
 

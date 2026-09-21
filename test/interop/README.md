@@ -38,7 +38,7 @@ every language. Exit code 0 means the scenario ran to the end.
 | `cancel` | return-immediately, then `CancelTask`, then `GetTask` reads `canceled` |
 | `get` | `GetTask` after a completed send returns the same id and artifact |
 | `direct` | `direct` answers with a Message rather than a Task |
-| `error` | a missing task arrives as an error naming it, not as a success |
+| `error` | a missing task arrives as the A2A reason `TASK_NOT_FOUND`, read from `ErrorInfo` |
 
 ## Adding a language
 
@@ -52,6 +52,10 @@ every language. Exit code 0 means the scenario ran to the end.
 ## Notes
 
 - Versions are pinned. Bump them on purpose and run every group after.
+- Every client reports the A2A reason from `google.rpc.ErrorInfo`, not
+  its own error class, so one assertion covers all three. Each SDK
+  exposes it differently: `ErrorReason/1` in Go, `A2AError.reason` in
+  JavaScript, `A2A_ERROR_REASONS[type(exc)]` in Python.
 - Two quirks worth knowing, both found by writing these clients: the
   JavaScript SDK serialises an `undefined` `taskId` literally, so a
   request must carry the proto default instead, and its non-streaming

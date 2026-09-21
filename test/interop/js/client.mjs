@@ -213,7 +213,9 @@ const scenarios = {
     });
   },
 
-  // A missing task must arrive as an error, not a success.
+  // A missing task must arrive as the A2A reason, not a bare status.
+  // Every language reports the same UPPER_SNAKE reason from
+  // google.rpc.ErrorInfo, which A2AError carries as `reason'.
   async error(client) {
     try {
       await client.getTask({ id: 'no-such-task' });
@@ -221,7 +223,7 @@ const scenarios = {
     } catch (err) {
       emit({
         step: 'error',
-        error: err?.constructor?.name ?? 'error',
+        error: err?.reason ?? err?.constructor?.name ?? 'error',
         text: String(err?.message ?? err),
       });
     }

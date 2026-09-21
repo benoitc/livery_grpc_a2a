@@ -526,15 +526,14 @@ t_ref_direct(Config) ->
 
 %% The SDK recovers the A2A error type from the ErrorInfo this binding
 %% puts in grpc-status-details-bin, rather than seeing a bare NOT_FOUND.
-%% A missing task must reach the client as an error naming that task,
-%% not as a success. Each SDK labels it its own way (a2a-go reports the
-%% A2A reason `TASK_NOT_FOUND', a2a-python the exception class), so the
-%% shared assertion is the portable part. The exact reason carried in
-%% `grpc-status-details-bin' is checked on the wire by
-%% t_wire_error_details, which is the right place for it.
+%% A missing task reaches every client as the same A2A reason, read
+%% from `google.rpc.ErrorInfo' in `grpc-status-details-bin'. Each SDK
+%% exposes it differently (a2a-go `ErrorReason/1', a2a-js `A2AError.reason',
+%% a2a-python a mapping from its exception type), and each client
+%% reports that reason, so one value holds for all three.
 t_ref_error(Config) ->
     [Step] = ref_client(Config, "error"),
-    ?assertNotEqual(<<"none">>, maps:get(<<"error">>, Step)),
+    ?assertEqual(<<"TASK_NOT_FOUND">>, maps:get(<<"error">>, Step)),
     ?assertNotEqual(nomatch, binary:match(maps:get(<<"text">>, Step), <<"no-such-task">>)).
 
 %% Run one scenario against the served agent and return the JSON objects
