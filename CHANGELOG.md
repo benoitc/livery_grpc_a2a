@@ -27,17 +27,16 @@ an A2A user does not take on `gpb`.
   and a `BadRequest` for `invalid_params`.
 - Tests: 120 vendored schema vectors validated against the official A2A
   JSON Schema, an end to end suite over `barrel_a2a_client`, a raw
-  `livery_grpc_client` and grpcurl, and interop groups for the
-  `a2a-python`, `a2a-go` and `@a2a-js/sdk` reference SDKs.
+  `livery_grpc_client` and grpcurl over server reflection, and interop
+  groups for the `a2a-python`, `a2a-go` and `@a2a-js/sdk` reference
+  SDKs.
 - `docs/guides/a2a.md` and `docs/compliance.md`, which maps each RPC,
   wire requirement and error rule to the test that proves it.
 
 ### Dependencies
-- `livery_grpc` `~> 0.2.3`, the first hex package that declares `livery`
-  and `h2`, and `barrel_a2a` `~> 0.2.0`.
+- `livery_grpc` `~> 0.2.4`, which declares `livery` and `h2` on hex and
+  serves reflection for the `map<>` fields of `a2a.proto`, and
+  `barrel_a2a` `~> 0.2.0`.
 
 ### Known issues
-- Server reflection lists the service but cannot serve its message
-  schemas: gpb's descriptor output omits the map entry types that
-  `map<>` fields need. Pass `-proto` to grpcurl.
 - Trailing metadata does not echo the active extensions.

@@ -59,14 +59,6 @@ use `-moduledoc`, so you need OTP 27 or later; CI runs OTP 28.
 See the [A2A guide](docs/guides/a2a.md), and the
 [changelog](CHANGELOG.md) for what each release carries.
 
-## Known gap
-
-Server reflection cannot serve this binding's message schemas. `a2a.proto`
-uses `map<>` fields, and gpb's descriptor output omits the synthetic map
-entry types they need (`google.protobuf.Struct.FieldsEntry` and friends),
-which protoreflect rejects. The fix belongs in `livery_grpc_reflection`,
-which is where the `FileDescriptorSet` is split.
-
 ## Tests
 
 ```sh

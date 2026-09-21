@@ -183,7 +183,19 @@ Python SDK, for instance, raises `TaskNotFoundError` rather than a bare
 
 ## Talking to the service directly
 
-With grpcurl, point at the vendored proto:
+Start the server with `reflection => true` and grpcurl needs no proto
+file:
+
+```sh
+grpcurl -plaintext localhost:50051 describe lf.a2a.v1.Task
+
+grpcurl -plaintext \
+  -H 'a2a-version: 1.0' \
+  -d '{"message":{"messageId":"1","role":"ROLE_USER","parts":[{"text":"hello"}]}}' \
+  localhost:50051 lf.a2a.v1.A2AService/SendMessage
+```
+
+Without reflection, point at the vendored proto:
 
 ```sh
 grpcurl -plaintext -import-path proto -proto a2a.proto \
@@ -195,10 +207,8 @@ grpcurl -plaintext -import-path proto -proto a2a.proto \
 Add `-proto google/rpc/error_details.proto` to have grpcurl decode the
 `ErrorInfo` in a failure's details.
 
-Reflection (`reflection => true`) advertises the service but cannot serve
-its message schemas: gpb's descriptor output omits the synthetic map
-entry types that `google.protobuf.Struct` and the other map fields need,
-which protoreflect rejects. Pass `-proto` until that is fixed.
+Reflection of `map<>` fields needs `livery_grpc` 0.2.4 or later, which
+this package requires.
 
 ## Notes
 

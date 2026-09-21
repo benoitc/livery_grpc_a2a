@@ -40,6 +40,8 @@ are barrel_a2a's and are covered by its own suites.
 | An unknown method is `UNIMPLEMENTED` | `t_wire_unknown_method` |
 | `grpc-timeout` is honoured | `t_wire_deadline` |
 | Server reflection lists the service | `t_grpcurl_list` |
+| Server reflection serves the message schemas, `map<>` fields included | `t_grpcurl_describe` |
+| A client with no `.proto` builds a call from reflection | `t_grpcurl_send` |
 
 ## Errors
 
@@ -87,8 +89,3 @@ authentication or the agent card itself; those are barrel_a2a's and are
 covered by its suites. Client streaming and bidirectional streaming are
 not part of A2A: every streaming RPC in `A2AService` is server
 streaming.
-
-Server reflection cannot serve this binding's message schemas, because
-gpb's descriptor output omits the synthetic map entry types a `map<>`
-field needs. `t_grpcurl_list` covers listing the service; describing a
-message is the gap, tracked in the README.

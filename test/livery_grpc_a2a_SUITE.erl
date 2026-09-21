@@ -59,7 +59,7 @@ groups() ->
             t_wire_unknown_method,
             t_wire_deadline
         ]},
-        {grpcurl, [], [t_grpcurl_list, t_grpcurl_send, t_grpcurl_error]},
+        {grpcurl, [], [t_grpcurl_list, t_grpcurl_describe, t_grpcurl_send, t_grpcurl_error]},
         {python, [], ref_cases()},
         {go, [], ref_cases()},
         {js, [], ref_cases()}
@@ -446,25 +446,29 @@ t_wire_deadline(Config) ->
 %% grpcurl: a real external client
 %%====================================================================
 
-%% Reflection advertises the service. It cannot serve a2a_pb's message
-%% schemas: gpb's descriptor output omits the synthetic map entry types
-%% (`Struct.FieldsEntry` and friends), which protoreflect rejects. The
-%% calls below therefore pass the vendored `.proto` instead, which is
-%% what an external client would have anyway.
+%% Reflection serves the whole schema, map fields included, so grpcurl
+%% needs no `.proto': it lists the service, describes a message and
+%% builds the request from what the server tells it.
 t_grpcurl_list(Config) ->
     Out = grpcurl(Config, "", "list"),
     ?assert(contains(Out, "lf.a2a.v1.A2AService")).
 
+t_grpcurl_describe(Config) ->
+    Out = grpcurl(Config, "", "describe lf.a2a.v1.Task"),
+    ?assert(contains(Out, "message Task")),
+    ?assert(contains(Out, "google.protobuf.Struct metadata")).
+
 t_grpcurl_send(Config) ->
     Payload =
+        "-H 'a2a-version: 1.0' "
         "-d '{\"message\":{\"messageId\":\"grpcurl-1\",\"role\":\"ROLE_USER\","
         "\"parts\":[{\"text\":\"echo: from grpcurl\"}]}}'",
-    Out = grpcurl(
-        Config, ?config(proto_args, Config) ++ Payload, "lf.a2a.v1.A2AService/SendMessage"
-    ),
+    Out = grpcurl(Config, Payload, "lf.a2a.v1.A2AService/SendMessage"),
     ?assert(contains(Out, "from grpcurl")),
     ?assert(contains(Out, "TASK_STATE_COMPLETED")).
 
+%% The vendored protos still work, and bring `error_details.proto' so
+%% grpcurl decodes the `ErrorInfo'.
 t_grpcurl_error(Config) ->
     Args = ?config(proto_args, Config) ++ "-d '{\"id\":\"missing\"}'",
     Out = grpcurl(Config, Args, "lf.a2a.v1.A2AService/GetTask"),
