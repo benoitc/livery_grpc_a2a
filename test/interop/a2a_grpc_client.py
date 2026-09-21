@@ -138,7 +138,7 @@ def last_task(events):
 
 async def scenario_send(client):
     """Blocking SendMessage: one Task, already complete."""
-    events = await collect(client, message("echo: from python"))
+    events = await collect(client, message("echo: interop"))
     task = last_task(events)
     emit(
         step="send",

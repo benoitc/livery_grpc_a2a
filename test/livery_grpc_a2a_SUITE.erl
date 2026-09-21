@@ -24,7 +24,16 @@ behaviour this repository controls.
 -define(TIMEOUT, 10000).
 
 all() ->
-    [{group, client}, {group, wire}, {group, grpcurl}, {group, python}].
+    [
+        {group, client},
+        {group, wire},
+        {group, grpcurl},
+        %% One group per reference SDK, each skipping when its toolchain
+        %% is absent so a plain `rebar3 ct' needs none of them.
+        {group, python},
+        {group, go},
+        {group, js}
+    ].
 
 groups() ->
     [
@@ -51,15 +60,23 @@ groups() ->
             t_wire_deadline
         ]},
         {grpcurl, [], [t_grpcurl_list, t_grpcurl_send, t_grpcurl_error]},
-        {python, [], [
-            t_python_send,
-            t_python_stream,
-            t_python_multiturn,
-            t_python_cancel,
-            t_python_get,
-            t_python_direct,
-            t_python_error
-        ]}
+        {python, [], ref_cases()},
+        {go, [], ref_cases()},
+        {js, [], ref_cases()}
+    ].
+
+%% The scenarios every reference SDK runs against the served agent. Each
+%% language ships a client that speaks gRPC with its own stack and
+%% prints the same JSON steps, so the assertions below are shared.
+ref_cases() ->
+    [
+        t_ref_send,
+        t_ref_stream,
+        t_ref_multiturn,
+        t_ref_cancel,
+        t_ref_get,
+        t_ref_direct,
+        t_ref_error
     ].
 
 init_per_suite(Config) ->
@@ -100,12 +117,10 @@ init_per_group(grpcurl, Config) ->
         false -> {skip, "grpcurl not installed"};
         Path -> [{grpcurl, Path}, {proto_args, proto_args()} | Config]
     end;
-init_per_group(python, Config) ->
-    case python_interpreter() of
-        false ->
-            {skip, "set INTEROP_PYTHON, or run `make interop-a2a-setup`"};
-        Python ->
-            [{python, Python}, {script, interop_script()} | Config]
+init_per_group(Language, Config) when Language =:= python; Language =:= go; Language =:= js ->
+    case runner(Language) of
+        {error, Why} -> {skip, Why};
+        {ok, Runner} -> [{runner, Runner} | Config]
     end;
 init_per_group(_Group, Config) ->
     Config.
@@ -461,16 +476,16 @@ t_grpcurl_error(Config) ->
 %%====================================================================
 
 %% Blocking SendMessage answers with one completed Task.
-t_python_send(Config) ->
-    [Step] = python(Config, "send"),
+t_ref_send(Config) ->
+    [Step] = ref_client(Config, "send"),
     ?assertEqual([<<"task">>], maps:get(<<"kinds">>, Step)),
     ?assertEqual(<<"TASK_STATE_COMPLETED">>, maps:get(<<"state">>, Step)),
-    ?assertEqual(<<"from python">>, maps:get(<<"text">>, Step)).
+    ?assertEqual(<<"interop">>, maps:get(<<"text">>, Step)).
 
 %% SendStreamingMessage: the SDK sees the event order and reassembles the
 %% artifact from its two chunks.
-t_python_stream(Config) ->
-    [Step] = python(Config, "stream"),
+t_ref_stream(Config) ->
+    [Step] = ref_client(Config, "stream"),
     ?assertEqual(
         [
             <<"task">>,
@@ -486,41 +501,51 @@ t_python_stream(Config) ->
     ),
     ?assertEqual(<<"part one part two">>, maps:get(<<"text">>, Step)).
 
-t_python_multiturn(Config) ->
-    [Ask, FollowUp] = python(Config, "multiturn"),
+t_ref_multiturn(Config) ->
+    [Ask, FollowUp] = ref_client(Config, "multiturn"),
     ?assertEqual(<<"TASK_STATE_INPUT_REQUIRED">>, maps:get(<<"state">>, Ask)),
     ?assertEqual(<<"TASK_STATE_COMPLETED">>, maps:get(<<"state">>, FollowUp)),
     ?assertEqual(maps:get(<<"task_id">>, Ask), maps:get(<<"task_id">>, FollowUp)),
     ?assertEqual(<<"thanks: second">>, maps:get(<<"text">>, FollowUp)).
 
-t_python_cancel(Config) ->
-    [_Started, Cancel, Get] = python(Config, "cancel"),
+t_ref_cancel(Config) ->
+    [_Started, Cancel, Get] = ref_client(Config, "cancel"),
     ?assertEqual(<<"TASK_STATE_CANCELED">>, maps:get(<<"state">>, Cancel)),
     ?assertEqual(<<"TASK_STATE_CANCELED">>, maps:get(<<"state">>, Get)).
 
-t_python_get(Config) ->
-    [Step] = python(Config, "get"),
+t_ref_get(Config) ->
+    [Step] = ref_client(Config, "get"),
     ?assertEqual(<<"TASK_STATE_COMPLETED">>, maps:get(<<"state">>, Step)),
     ?assertEqual(<<"fetch me">>, maps:get(<<"text">>, Step)),
     ?assert(maps:get(<<"same_id">>, Step)).
 
-t_python_direct(Config) ->
-    [Step] = python(Config, "direct"),
+t_ref_direct(Config) ->
+    [Step] = ref_client(Config, "direct"),
     ?assertEqual([<<"message">>], maps:get(<<"kinds">>, Step)),
     ?assertEqual(<<"direct reply">>, maps:get(<<"text">>, Step)).
 
 %% The SDK recovers the A2A error type from the ErrorInfo this binding
 %% puts in grpc-status-details-bin, rather than seeing a bare NOT_FOUND.
-t_python_error(Config) ->
-    [Step] = python(Config, "error"),
-    ?assertEqual(<<"TaskNotFoundError">>, maps:get(<<"error">>, Step)).
+%% A missing task must reach the client as an error naming that task,
+%% not as a success. Each SDK labels it its own way (a2a-go reports the
+%% A2A reason `TASK_NOT_FOUND', a2a-python the exception class), so the
+%% shared assertion is the portable part. The exact reason carried in
+%% `grpc-status-details-bin' is checked on the wire by
+%% t_wire_error_details, which is the right place for it.
+t_ref_error(Config) ->
+    [Step] = ref_client(Config, "error"),
+    ?assertNotEqual(<<"none">>, maps:get(<<"error">>, Step)),
+    ?assertNotEqual(nomatch, binary:match(maps:get(<<"text">>, Step), <<"no-such-task">>)).
 
-%% Run one scenario and return the JSON objects it printed.
-python(Config, Scenario) ->
+%% Run one scenario against the served agent and return the JSON objects
+%% the client printed. Every language's client takes the same two
+%% arguments and prints the same steps; only the launcher differs.
+ref_client(Config, Scenario) ->
+    {Exe, Prefix} = ?config(runner, Config),
     Command = lists:flatten(
         io_lib:format(
-            "~s ~s 127.0.0.1:~b ~s 2>&1; echo \"exit=$?\"",
-            [?config(python, Config), ?config(script, Config), ?config(port, Config), Scenario]
+            "~s~s 127.0.0.1:~b ~s 2>&1; echo \"exit=$?\"",
+            [Exe, [[" ", A] || A <- Prefix], ?config(port, Config), Scenario]
         )
     ),
     Out = os:cmd(Command),
@@ -528,9 +553,29 @@ python(Config, Scenario) ->
     Lines = string:lexemes(Out, "\n"),
     case lists:last(Lines) of
         "exit=0" -> ok;
-        Other -> ct:fail({python_failed, Other})
+        Other -> ct:fail({ref_client_failed, Scenario, Other})
     end,
     [json:decode(iolist_to_binary(L)) || L <- Lines, string:prefix(L, "{") =/= nomatch].
+
+%% How to launch each reference implementation's gRPC client.
+runner(python) ->
+    case python_interpreter() of
+        false -> {error, "set INTEROP_PYTHON, or run `make interop-a2a-setup`"};
+        Python -> {ok, {Python, [interop_script()]}}
+    end;
+runner(go) ->
+    Bin = interop_path("go/bin/client"),
+    case filelib:is_regular(Bin) of
+        true -> {ok, {Bin, []}};
+        false -> {error, "no Go client built; run `make interop-go`"}
+    end;
+runner(js) ->
+    Script = interop_path("js/client.mjs"),
+    Node = os:find_executable("node"),
+    case Node =/= false andalso filelib:is_regular(Script) of
+        true -> {ok, {Node, [Script]}};
+        false -> {error, "node missing or no JS client; run `make interop-js`"}
+    end.
 
 python_interpreter() ->
     Candidates = [os:getenv("INTEROP_PYTHON"), venv_python()],

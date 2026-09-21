@@ -6,3 +6,10 @@ erl_crash.dump
 doc/
 src/*_pb.erl
 test/interop/.venv/
+
+# Go interop binaries (make interop-go-setup)
+test/interop/go/bin/
+
+# JS interop deps (make interop-js-setup)
+test/interop/js/node_modules/
+test/interop/js/package-lock.json

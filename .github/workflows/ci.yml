@@ -147,3 +147,37 @@ jobs:
       - name: System deps
         run: sudo apt-get update && sudo apt-get install -y cmake build-essential
       - run: make interop-a2a
+
+  # The same scenarios driven by the Go SDK over gRPC.
+  interop-go:
+    name: Go interop
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+      - uses: erlef/setup-beam@v1
+        with:
+          otp-version: ${{ env.OTP }}
+          rebar3-version: ${{ env.REBAR3 }}
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.25'
+      - name: System deps
+        run: sudo apt-get update && sudo apt-get install -y cmake build-essential
+      - run: make interop-go
+
+  # And by the JavaScript SDK, whose gRPC transport is Node only.
+  interop-js:
+    name: JS interop
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+      - uses: erlef/setup-beam@v1
+        with:
+          otp-version: ${{ env.OTP }}
+          rebar3-version: ${{ env.REBAR3 }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: System deps
+        run: sudo apt-get update && sudo apt-get install -y cmake build-essential
+      - run: make interop-js

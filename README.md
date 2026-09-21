@@ -56,10 +56,10 @@ which is where the `FileDescriptorSet` is split.
 ## Tests
 
 ```sh
-rebar3 eunit        # codec, including the schema vectors
-rebar3 ct           # a served agent, driven over gRPC in both directions
-make interop-a2a    # the same agent, driven by the official Python SDK
-make check          # the lot, plus dialyzer, xref, elvis and erlfmt
+rebar3 eunit    # codec, including the schema vectors
+rebar3 ct       # everything below, skipping what is not installed
+make interop    # the reference SDKs: Python, Go and JavaScript
+make check      # the lot, plus dialyzer, xref, elvis and erlfmt
 ```
 
 **eunit** runs 120 vendored schema vectors, one canonical instance of
@@ -73,10 +73,14 @@ ships in `priv`. The vectors live in `test/schema_vectors`; see its
 ways: through `barrel_a2a_client` over the gRPC transport, through a raw
 `livery_grpc_client`, and through `grpcurl` against server reflection.
 
-**make interop-a2a** drives the same agent with the official A2A Python
-SDK over its gRPC transport, so the wire is read by an implementation
-that shares no code with this one. That group skips when the venv is
-absent, so `rebar3 ct` never needs Python.
+**Interop** drives the same agent from three independent SDKs over
+gRPC, none of which shares code with this one: `a2a-python`, `a2a-go`
+and `@a2a-js/sdk`, seven scenarios each. Every group skips when its
+toolchain is absent, so `rebar3 ct` never needs any of them. See
+`test/interop/README.md`.
+
+[`docs/compliance.md`](docs/compliance.md) maps every RPC, wire
+requirement and error rule to the test that proves it.
 
 ## License
 

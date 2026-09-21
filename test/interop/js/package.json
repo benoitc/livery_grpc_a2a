@@ -1,0 +1,11 @@
+{
+  "name": "livery-grpc-a2a-interop-js",
+  "private": true,
+  "type": "module",
+  "description": "Reference A2A gRPC client driven by livery_grpc_a2a_SUITE",
+  "dependencies": {
+    "@a2a-js/sdk": "1.2.0",
+    "@grpc/grpc-js": "^1.12.0",
+    "@bufbuild/protobuf": "^2.2.0"
+  }
+}
