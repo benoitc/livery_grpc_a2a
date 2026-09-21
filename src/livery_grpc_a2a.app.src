@@ -7,5 +7,5 @@
     {modules, []},
     {licenses, ["Apache-2.0"]},
     {links, [{"GitHub", "https://github.com/benoitc/livery_grpc_a2a"}]},
-    {files, ["src", "proto", "rebar.config", "README.md", "LICENSE", "docs"]}
+    {files, ["src", "proto", "rebar.config", "README.md", "CHANGELOG.md", "LICENSE", "docs"]}
 ]}.
