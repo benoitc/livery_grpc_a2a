@@ -569,12 +569,16 @@ runner(go) ->
         true -> {ok, {Bin, []}};
         false -> {error, "no Go client built; run `make interop-go`"}
     end;
+%% `node' alone is not enough: a CI runner has it installed, and the
+%% client fails on its first import without the SDK. Require the
+%% installed dependencies too, or the group runs when it should skip.
 runner(js) ->
     Script = interop_path("js/client.mjs"),
+    Deps = interop_path("js/node_modules"),
     Node = os:find_executable("node"),
-    case Node =/= false andalso filelib:is_regular(Script) of
+    case Node =/= false andalso filelib:is_regular(Script) andalso filelib:is_dir(Deps) of
         true -> {ok, {Node, [Script]}};
-        false -> {error, "node missing or no JS client; run `make interop-js`"}
+        false -> {error, "no JS client or its deps; run `make interop-js`"}
     end.
 
 python_interpreter() ->
