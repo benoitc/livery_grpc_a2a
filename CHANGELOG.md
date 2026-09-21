@@ -32,10 +32,12 @@ an A2A user does not take on `gpb`.
 - `docs/guides/a2a.md` and `docs/compliance.md`, which maps each RPC,
   wire requirement and error rule to the test that proves it.
 
+### Dependencies
+- `livery_grpc` `~> 0.2.3`, the first hex package that declares `livery`
+  and `h2`, and `barrel_a2a` `~> 0.2.0`.
+
 ### Known issues
 - Server reflection lists the service but cannot serve its message
   schemas: gpb's descriptor output omits the map entry types that
   `map<>` fields need. Pass `-proto` to grpcurl.
 - Trailing metadata does not echo the active extensions.
-- `livery` is named as a direct dependency because the `livery_grpc`
-  packages on hex (0.2.0 through 0.2.3) do not declare it.
