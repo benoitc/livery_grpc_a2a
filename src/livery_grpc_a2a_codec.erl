@@ -16,8 +16,9 @@ Pb   = livery_grpc_a2a_codec:to_pb('Task', Json).
 ```
 
 It is descriptor driven: field names, types, oneof membership and
-presence rules come from `a2a_pb:fetch_msg_def/1` at runtime, so a
-change to `proto/a2a.proto` needs no change here. Five message types are
+presence rules come from the message definitions of the generated
+`a2a_pb` module at runtime, so a change to `proto/a2a.proto` needs no
+change here. Five message types are
 special cased because ProtoJSON gives them a shorthand form:
 `google.protobuf.Struct` and `Value` and `ListValue` become plain JSON,
 `Timestamp` becomes ISO 8601 text, `Empty` becomes an empty object.
